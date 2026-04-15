@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS Growth Intelligence Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-light: #dbeafe;
+            --success: #16a34a;
+            --success-light: #dcfce7;
+            --danger: #dc2626;
+            --danger-light: #fee2e2;
+            --warning: #fbbf24;
+            --neutral: #6b7280;
+            --neutral-light: #f3f4f6;
+            --bg: #ffffff;
+            --bg-secondary: #f8fafc;
+            --border: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 13px;
+            line-height: 1.4;
+            overflow-x: hidden;
+        }
+
+        /* ========================================
+           LAYOUT CONTAINERS
+        ======================================== */
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* 16:9 First Screen Experience */
+        .hero-screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            gap: 24px;
+        }
+
+        .scroll-section {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+        }
+
+        /* Main Grid for charts and table */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 16px;
+            align-items: stretch;
+            flex: 1;
+        }
+
+        /* ========================================
+           HEADER
+        ======================================== */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 11px;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        .header-tag {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ========================================
+           KPI SECTION
+        ======================================== */
+        .kpi-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .kpi-card {
+            background: var(--bg);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            border: 1px solid transparent;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-light);
+        }
+
+        .kpi-card.alert {
+            border: 2px solid var(--danger);
+            background: #fffafa;
+        }
+
+        .kpi-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2px;
+        }
+
+        .kpi-icon.blue {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .kpi-icon.red {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .kpi-icon.green {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .kpi-icon.gray {
+            background: var(--neutral-light);
+            color: var(--neutral);
+        }
+
+        .kpi-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.1;
+        }
+
+        .kpi-insight {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .kpi-card.alert .kpi-value,
+        .kpi-card.alert .kpi-insight {
+            color: var(--danger);
+        }
+
+        /* ========================================
+           CHART CONTAINERS & GRID
+        ======================================== */
+        .charts-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+        }
+
+        .chart-card {
+            background: var(--bg);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border);
+        }
+
+        .chart-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 130px;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* ========================================
+           HIGH-RISK TABLE
+        ======================================== */
+        .table-section {
+            background: var(--bg);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border);
+        }
+
+        .high-risk-table {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            height: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        th {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--bg-secondary);
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+            transition: background 0.2s;
+        }
+
+        tr {
+            cursor: pointer;
+        }
+
+        tr:hover td {
+            background: var(--bg-secondary);
+        }
+
+        tr.highlight {
+            background: #fff1f2;
+            border-left: 4px solid var(--danger);
+        }
+
+        .risk-badge {
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .risk-badge.high {
+            background: var(--danger);
+            color: white;
+        }
+
+        .risk-badge.medium {
+            background: var(--warning);
+            color: #92400e;
+        }
+
+        .risk-badge.low {
+            background: var(--success);
+            color: white;
+        }
+
+        .insight-disclosure {
+            font-size: 11px;
+            color: var(--text-secondary);
+            padding: 10px;
+            background: var(--neutral-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            display: none;
+            animation: slideDown 0.3s ease-out forwards;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========================================
+           SCROLL COMPONENTS
+        ======================================== */
+        .section-header {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .scroll-hint {
+            text-align: center;
+            font-size: 13px;
+            color: var(--neutral);
+            font-weight: 600;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* ========================================
+           UNIT ECONOMICS (PROMOTED)
+        ======================================== */
+        .economics-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+            gap: 16px;
+        }
+
+        .economics-comparison {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            font-size: 48px;
+            font-weight: 800;
+        }
+
+        .value-ltv {
+            color: var(--text-primary);
+        }
+
+        .value-cac {
+            color: var(--danger);
+        }
+
+        .operator {
+            color: var(--neutral);
+            font-weight: 400;
+        }
+
+        .red-alert-box {
+            background: var(--danger);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .red-alert-box.hidden {
+            display: none;
+        }
+
+        /* ========================================
+           RISK DISTRIBUTION SECTION
+        ======================================== */
+        .risk-dist-grid {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        .risk-dist-chart-container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .risk-dist-chart {
+            height: 220px !important;
+        }
+
+        /* ========================================
+           IMPACT SIMULATION
+        ======================================== */
+        .simulation-card {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .sim-header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .sim-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slider-info {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 10px;
+            background: white;
+            border-radius: 5px;
+            outline: none;
+            border: 1px solid var(--primary-light);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .sim-results {
+            margin-top: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        /* Unified Analytics Grid */
+        .unified-analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.2fr;
+            gap: 16px;
+        }
+
+        .analytics-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .analytics-card.highlight-blue {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e0efff 100%);
+            border: 1px solid var(--primary-light);
+        }
+
+        .analytics-card-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .economics-compact {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 100%;
+        }
+
+        .comparison-badge {
+            font-size: 20px;
+            font-weight: 800;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* Business Impact Section */
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 10px;
+        }
+
+        .impact-card {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 140px;
+        }
+
+        .impact-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .impact-card p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .highlight-success {
+            color: var(--success);
+        }
+
+        /* ========================================
+           RESPONSIVENESS
+        ======================================== */
+        @media (max-width: 1200px) {
+            .unified-analytics-grid { grid-template-columns: 1fr 1fr; }
+            .impact-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .hero-screen { min-height: auto; height: auto; }
+        }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; text-align: center; gap: 16px; padding: 16px; min-height: auto; }
+            .unified-analytics-grid { grid-template-columns: 1fr; }
+            .impact-grid { grid-template-columns: 1fr; }
+            .analytics-card { height: auto; }
+            .comparison-badge { font-size: 18px; flex-wrap: wrap; justify-content: center; }
+            .hero-screen { padding: 12px; gap: 16px; }
+            .scroll-section { padding: 16px; gap: 16px; }
+            .kpi-card { padding: 12px; }
+            .high-risk-table { overflow-x: auto; }
+            table { min-width: 400px; } /* Prevent table squash */
+        }
+
+        @media (max-width: 480px) {
+            body { font-size: 12px; }
+            .header h1 { font-size: 1.2rem; }
+            .kpi-value { font-size: 1.5rem; }
+            .container { padding: 0; }
+            .charts-row { grid-template-columns: 1fr; }
+            .chart-card { min-height: 200px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <section class="hero-screen">
+            <!-- Header -->
+            <header class="header">
+                <div>
+                    <h1>SaaS Growth Intelligence System</h1>
+                    <p>Retention Modeling & Unit Economics Optimizer</p>
+                </div>
+                <span class="header-tag">Business Analyst View</span>
+            </header>
+
+            <!-- KPI Row -->
+            <div class="kpi-section">
+                <div class="kpi-card">
+                    <div class="kpi-icon blue">
+                        <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                        </svg>
+                    </div>
+                    <div class="kpi-label">Market Reach</div>
+                    <div class="kpi-value">7,043</div>
+                    <div class="kpi-insight">Total Active Users</div>
+                </div>
+
+                <div class="kpi-card" id="churnKpi">
+                    <div class="kpi-icon red">
+                        <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="kpi-label">Churn Velocity</div>
+                    <div class="kpi-value">26.57%</div>
+                    <div class="kpi-insight">Critical Attention Required</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon green">
+                        <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                            <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="kpi-label">Avg LTV</div>
+                    <div class="kpi-value">₹495</div>
+                    <div class="kpi-insight">Lifetime Value Per User</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon gray">
+                        <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                        </svg>
+                    </div>
+                    <div class="kpi-label">CAC</div>
+                    <div class="kpi-value">₹650</div>
+                    <div class="kpi-insight">Acquisition Efficiency</div>
+                </div>
+
+                <div class="kpi-card alert">
+                    <div class="kpi-icon red">
+                        <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="kpi-label">Efficiency Ratio</div>
+                    <div class="kpi-value">0.76</div>
+                    <div class="kpi-insight">Negative Unit Economics</div>
+                </div>
+            </div>
+
+            <!-- Main Work Area -->
+            <div class="main-grid">
+                <!-- Churn Drivers (Horizontal Row) -->
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <div class="chart-title">Contract Churn Risk</div>
+                        <div class="chart-container">
+                            <canvas id="chartContract"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Connectivity Churn Drivers</div>
+                        <div class="chart-container">
+                            <canvas id="chartInternet"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Payment Method</div>
+                        <div class="chart-container">
+                            <canvas id="chartPayment"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- High Risk Segment (Top 3) -->
+                <div class="table-section">
+                    <div class="chart-title">Top Risk Targets</div>
+                    <div class="high-risk-table">
+                        <table id="riskTable">
+                            <thead>
+                                <tr>
+                                    <th>Segment Analysis</th>
+                                    <th>Base</th>
+                                    <th>Churn</th>
+                                    <th>Risk</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="highlight"
+                                    data-insight="MTM + Fiber + E-Check represents 18.6% of users but accounts for 38.2% of total churn.">
+                                    <td>MTM + Fiber + E-Check</td>
+                                    <td>1,307</td>
+                                    <td>60.37%</td>
+                                    <td><span class="risk-badge high">Severe</span></td>
+                                </tr>
+                                <tr data-insight="Fiber users without long-term contracts are highly volatile.">
+                                    <td>MTM + Fiber + Other</td>
+                                    <td>892</td>
+                                    <td>45.20%</td>
+                                    <td><span class="risk-badge high">Critical</span></td>
+                                </tr>
+                                <tr
+                                    data-insight="Electronic check users show consistently higher abandonment rates across all contract types.">
+                                    <td>MTM + DSL + E-Check</td>
+                                    <td>654</td>
+                                    <td>38.50%</td>
+                                    <td><span class="risk-badge medium">Medium</span></td>
+                                </tr>
+                                <tr data-insight="Long term contracts drastically stabilize fiber optic users.">
+                                    <td>1-Yr + Fiber + Bank</td>
+                                    <td>423</td>
+                                    <td>12.80%</td>
+                                    <td><span class="risk-badge low">Stable</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="insight-disclosure" id="insightBox" style="display: block;">
+                        MTM + Fiber + E-Check represents 18.6% of users but accounts for 38.2% of total churn.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator Removed -->
+        </section>
+
+        <!-- ========================================
+             SCROLL SECTION (UNIFIED DEEP DIVE)
+        ======================================== -->
+        <div class="scroll-section" id="deepDive">
+            <div class="unified-analytics-grid">
+                <!-- 1. Risk Distribution -->
+                <div class="analytics-card">
+                    <div class="analytics-card-title">Risk Distribution</div>
+                    <div class="chart-container" style="height: 180px;">
+                        <canvas id="chartRisk"></canvas>
+                    </div>
+                </div>
+
+                <!-- 2. Core Unit Economics -->
+                <div class="analytics-card">
+                    <div class="analytics-card-title">Core Unit Economics</div>
+                    <div class="economics-compact">
+                        <div class="comparison-badge">
+                            <span class="value-ltv" id="liveLtv" style="font-size: 24px;">₹495</span>
+                            <span class="operator" style="font-size: 18px;">&lt;</span>
+                            <span class="value-cac" style="font-size: 24px;">₹650</span>
+                        </div>
+                        <div class="red-alert-box" id="unitEconomicAlert" style="padding: 8px 16px; font-size: 11px;">
+                            Negative Unit Economics
+                        </div>
+                        <div id="unitEconomicSuccess" class="red-alert-box hidden"
+                            style="background: var(--success); padding: 8px 16px; font-size: 11px; box-shadow: none;">
+                            Positive Unit Economics
+                        </div>
+                        <p id="lossDescription"
+                            style="font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 4px;">
+                            Loss of <span style="font-weight: 700; color: var(--danger);" id="lossText">₹155</span> per
+                            customer.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 3. Strategic Simulation -->
+                <div class="analytics-card highlight-blue">
+                    <div class="analytics-card-title" style="color: var(--primary);">Impact Simulation</div>
+                    <div class="sim-controls" style="margin-top: 4px;">
+                        <div class="slider-group">
+                            <div class="slider-info" style="font-size: 10px;">
+                                <span>CHURN REDUCTION</span>
+                                <strong id="sliderVal">20%</strong>
+                            </div>
+                            <input type="range" id="impactSlider" min="0" max="60" value="20" step="5"
+                                style="height: 6px;">
+                        </div>
+                    </div>
+                    <div class="sim-results" style="margin-top: 8px;">
+                        <span id="labelReduction">-20%</span> →
+                        <span class="highlight-success" id="simLtvResult">LTV ₹594</span>
+                        <div id="simVerdict" style="color: var(--danger); font-size: 10px; margin-top: 2px;">STILL BELOW
+                            CAC</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Impact Section -->
+            <section id="impact">
+                <div class="section-header">
+                    <h2>Business Impact & Recommendations</h2>
+                </div>
+                <div class="impact-grid">
+                    <div class="impact-card">
+                        <h3>Retention Opportunity</h3>
+                        <p>Reducing churn in high-risk segments can increase customer lifetime and improve revenue
+                            stability</p>
+                    </div>
+                    <div class="impact-card">
+                        <h3>Cost Efficiency</h3>
+                        <p>Improving retention reduces dependency on high CAC acquisition channels</p>
+                    </div>
+                    <div class="impact-card">
+                        <h3>Revenue Impact</h3>
+                        <p>Extending average customer lifetime directly increases LTV and improves unit economics</p>
+                    </div>
+                    <div class="impact-card">
+                        <h3>Strategic Focus</h3>
+                        <p>Prioritize month-to-month, fiber, and electronic check users for maximum impact</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Register DataLabels Plugin
+        Chart.register(ChartDataLabels);
+
+        // Chart Global Config
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.size = 11;
+        Chart.defaults.color = '#64748b';
+        Chart.defaults.set('plugins.datalabels', {
+            color: '#fff',
+            font: { weight: 'bold', size: 10 },
+            formatter: (value) => (typeof value === 'number' ?
+                (value < 100 ? value.toFixed(1) + '%' : value.toLocaleString()) : value)
+        });
+
+        const colors = {
+            primary: '#2563eb',
+            success: '#16a34a',
+            danger: '#dc2626',
+            warning: '#fbbf24'
+        };
+
+        // Initialize Charts with maintainAspectRatio = false
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    padding: 12,
+                    cornerRadius: 8,
+                    bodyFont: { size: 12, weight: '600' }
+                },
+                datalabels: {
+                    display: true,
+                    anchor: 'center',
+                    align: 'center',
+                    offset: 0
+                }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
+            }
+        };
+
+        // 1. Churn by Contract (Histogram Style)
+        new Chart(document.getElementById('chartContract'), {
+            type: 'bar',
+            data: {
+                labels: ['MTM', '1-Yr', '2-Yr'],
+                datasets: [{
+                    data: [42.7, 11.3, 2.8],
+                    backgroundColor: [colors.danger, colors.warning, colors.success],
+                    barPercentage: 1.0,
+                    categoryPercentage: 1.0
+                }]
+            },
+            options: {
+                ...chartOptions,
+                plugins: {
+                    ...chartOptions.plugins,
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // 2. Churn by Internet
+        new Chart(document.getElementById('chartInternet'), {
+            type: 'polarArea',
+            data: {
+                labels: ['Fiber', 'DSL', 'None'],
+                datasets: [{
+                    data: [44.2, 28.5, 12.8],
+                    backgroundColor: [
+                        'rgba(220, 38, 38, 0.7)',
+                        'rgba(251, 191, 36, 0.7)',
+                        'rgba(22, 163, 74, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    r: { grid: { display: false }, ticks: { display: false } }
+                },
+                plugins: {
+                    ...chartOptions.plugins,
+                    legend: { display: true, position: 'bottom', labels: { boxSize: 8, usePointStyle: true } }
+                }
+            }
+        });
+
+        // 3. Churn by Payment
+        new Chart(document.getElementById('chartPayment'), {
+            type: 'doughnut',
+            data: {
+                labels: ['E-Check', 'Other'],
+                datasets: [{
+                    data: [60, 40],
+                    backgroundColor: [colors.danger, colors.primary],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                ...chartOptions,
+                plugins: {
+                    ...chartOptions.plugins,
+                    legend: { display: true, position: 'bottom', labels: { boxSize: 8, usePointStyle: true } }
+                }
+            }
+        });
+
+        // 4. Risk Distribution
+        new Chart(document.getElementById('chartRisk'), {
+            type: 'bar',
+            data: {
+                labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+                datasets: [{
+                    data: [4218, 1622, 1203],
+                    backgroundColor: [colors.success, colors.warning, colors.danger],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                ...chartOptions,
+                plugins: {
+                    ...chartOptions.plugins,
+                    datalabels: {
+                        ...chartOptions.plugins.datalabels,
+                        anchor: 'end',
+                        align: 'top',
+                        color: colors.primary,
+                        offset: 4
+                    }
+                },
+                scales: {
+                    ...chartOptions.scales,
+                    y: { ...chartOptions.scales.y, ticks: { callback: v => v.toLocaleString() } }
+                }
+            }
+        });
+
+        // ========================================
+        // INTERACTIVITY LOGIC
+        // ========================================
+
+        // A. KPI Click - Scroll to Risk Distribution
+        document.getElementById('churnKpi').addEventListener('click', () => {
+            document.getElementById('riskSection').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // B. High-Risk Table Interaction
+        const riskRows = document.querySelectorAll('#riskTable tbody tr');
+        const insightBox = document.getElementById('insightBox');
+
+        riskRows.forEach(row => {
+            row.addEventListener('click', () => {
+                const insightText = row.getAttribute('data-insight');
+                insightBox.textContent = insightText;
+                insightBox.style.display = 'block';
+
+                // Highlight row
+                riskRows.forEach(r => r.classList.remove('highlight'));
+                row.classList.add('highlight');
+            });
+        });
+
+        // C. Impact Simulation Slider Logic
+        const slider = document.getElementById('impactSlider');
+        const sliderValDisplay = document.getElementById('sliderVal');
+        const labelReduction = document.getElementById('labelReduction');
+        const simLtvResult = document.getElementById('simLtvResult');
+        const simVerdict = document.getElementById('simVerdict');
+
+        // Economy display elements
+        const liveLtv = document.getElementById('liveLtv');
+        const unitEconomicAlert = document.getElementById('unitEconomicAlert');
+        const unitEconomicSuccess = document.getElementById('unitEconomicSuccess');
+        const lossText = document.getElementById('lossText');
+
+        const BASE_LTV = 495;
+        const CAC = 650;
+
+        slider.addEventListener('input', function () {
+            const reduction = parseInt(this.value);
+            sliderValDisplay.textContent = reduction + '%';
+            labelReduction.textContent = '-' + reduction + '%';
+
+            // Simulation Math: New LTV = Current LTV * (1 + churn_reduction%)
+            const improvedLtv = Math.round(BASE_LTV * (1 + (reduction / 100)));
+            simLtvResult.textContent = 'LTV ₹' + improvedLtv;
+
+            // Update Core Economics simultaneously
+            liveLtv.textContent = 'LTV ₹' + improvedLtv;
+
+            const gap = improvedLtv - CAC;
+
+            if (gap >= 0) {
+                simVerdict.textContent = 'PROFITABLE';
+                simVerdict.style.color = colors.success;
+                unitEconomicAlert.classList.add('hidden');
+                unitEconomicSuccess.classList.remove('hidden');
+                document.getElementById('lossDescription').innerHTML = `Generating <span style="font-weight:700; color:var(--success);">₹${gap}</span> profit per customer.`;
+            } else {
+                simVerdict.textContent = 'STILL BELOW CAC';
+                simVerdict.style.color = colors.danger;
+                unitEconomicAlert.classList.remove('hidden');
+                unitEconomicSuccess.classList.add('hidden');
+                document.getElementById('lossDescription').innerHTML = `Loss of <span style="font-weight: 700; color: var(--danger);">₹${Math.abs(gap)}</span> per customer.`;
+            }
+        });
+
+    </script>
+</body>
+
+</html>
