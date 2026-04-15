@@ -244,9 +244,47 @@ data/
 
 sql/          (Analysis Queries 01-10)
 analysis/     (Business Reports 01-10)
+index.html   (Interactive Dashboard)
 ```
 
 ---
 
-# 14. Final Statement
+# 14. Interactive Dashboard
+
+The project includes a fully interactive **SaaS Growth Intelligence Dashboard** (`index.html`) that visualizes all key metrics in a business-analyst-friendly interface.
+
+### Dashboard Features
+
+**Hero Screen (First View)**
+- KPI cards: Market Reach (7,043 users), Churn Velocity (26.57%), Avg LTV (₹495), CAC (₹650), Efficiency Ratio
+- Churn drivers charts: Contract type, Internet service, Payment method
+- High-risk segment table with click-to-reveal insights
+
+**Scroll Section (Deep Dive)**
+- Risk distribution chart (Low/Medium/High segments)
+- Live unit economics display with LTV:CAC comparison
+- Impact simulation slider — adjust churn reduction and see projected LTV in real-time
+- Business impact cards with actionable recommendations
+
+### Dashboard Technical Stack
+- Pure HTML/CSS/JS (no build step required)
+- Chart.js with DataLabels plugin for visualizations
+- Inter font family via Google Fonts
+- Fully responsive (desktop, tablet, mobile)
+
+---
+
+# 15. Tools & Skills Demonstrated
+* SQL (data extraction, aggregation, multi-factor segmentation)
+* Analytical thinking (unit economics, rule-based risk modeling)
+* Business Strategy (LTV/CAC analysis, retention lever identification)
+* Data Cleaning & Validation
+* C-Suite Decision Reporting
+* Data Visualization (Chart.js, interactive dashboards)
+* HTML/CSS/JavaScript (standalone web dashboard)
+* USed Claude Code for responsive design of the dashboard
+
+---
+
+# 16. Final Statement
 > This system provides the foundation for data-driven growth by ensuring the business focuses its resources on the customers that drive the highest long-term value.
