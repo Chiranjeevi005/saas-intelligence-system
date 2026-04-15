@@ -19,7 +19,32 @@ This project builds an end-to-end analytics system to:
 
 ---
 
-# 2. Business Problem
+# 2. Repository Structure
+```plaintext
+data/
+  ├── raw/
+  └── processed/
+
+sql/          (Analysis Queries 01-10)
+analysis/     (Business Reports 01-10)
+index.html   (Interactive Dashboard)
+```
+
+---
+
+# 3. Tools & Skills Demonstrated
+* SQL (data extraction, aggregation, multi-factor segmentation)
+* Analytical thinking (unit economics, rule-based risk modeling)
+* Business Strategy (LTV/CAC analysis, retention lever identification)
+* Data Cleaning & Validation
+* C-Suite Decision Reporting
+* Data Visualization (Chart.js, interactive dashboards)
+* HTML/CSS/JavaScript (standalone web dashboard)
+* Used Claude Code for responsive design of the dashboard
+
+---
+
+# 4. Business Problem
 
 Despite overall positive unit economics, the company faces:
 
@@ -37,7 +62,7 @@ This results in:
 
 ---
 
-# 3. Objectives
+# 5. Objectives
 
 * Identify key drivers of customer churn
 * Segment users based on behavioral risk patterns
@@ -47,7 +72,7 @@ This results in:
 
 ---
 
-# 4. Dataset & Data Preparation
+# 6. Dataset & Data Preparation
 
 * Dataset: Customer churn dataset (7,043 users)
 * Features used:
@@ -64,9 +89,9 @@ This results in:
 
 ---
 
-# 5. Analytical Approach
+# 7. Analytical Approach
 
-## 5.1 Churn Analysis
+## 7.1 Churn Analysis
 * Overall churn rate calculation (26.54%)
 * Segmentation by:
   * Contract type (Month-to-month: 42.71%)
@@ -75,13 +100,13 @@ This results in:
 
 ---
 
-## 5.2 Multi-Factor Risk Segmentation
+## 7.2 Multi-Factor Risk Segmentation
 * Combined variables: Contract + Service + Payment
 * Identified highest-risk customer segment: Month-to-month + Fiber optic + Electronic check (60.37% churn)
 
 ---
 
-## 5.3 Churn Prediction (Rule-Based Model)
+## 7.3 Churn Prediction (Rule-Based Model)
 Developed a scoring model:
 
 ```text
@@ -108,7 +133,7 @@ Developed a scoring model:
 
 ---
 
-## 5.4 Unit Economics Analysis
+## 7.4 Unit Economics Analysis
 * LTV = Tenure × Monthly Charges
 * CAC = ₹650 (standard business benchmark)
 
@@ -118,15 +143,15 @@ Calculated:
 
 ---
 
-# 6. Key Insights
+# 8. Key Insights
 
-## 6.1 Contract Type Drives Churn
+## 8.1 Contract Type Drives Churn
 * Month-to-month users: 42.71% churn
 * Two-year contract: 2.83% churn (strongest retention lever)
 
 ---
 
-## 6.2 High-Risk Segment Identified
+## 8.2 High-Risk Segment Identified
 **Month-to-month + Fiber optic + Electronic check**
 * 1,307 users
 * 60.37% churn rate
@@ -134,19 +159,19 @@ Calculated:
 
 ---
 
-## 6.3 Payment Behavior Impact
+## 8.3 Payment Behavior Impact
 * Manual payments (electronic check) → 45.29% churn
 * Auto-pay methods → ~15.24% - 16.71% churn
 
 ---
 
-## 6.4 Churn → LTV Impact
+## 8.4 Churn → LTV Impact
 * High churn reduces tenure
 * Reduced tenure dramatically lowers LTV (churners avg 1,531.61 vs base avg 2,279.58)
 
 ---
 
-# 7. Financial Analysis
+# 9. Financial Analysis
 
 ```text
 ╭─────────────┬────────────┬───────────────╮
@@ -176,33 +201,33 @@ If churn in the high-risk segment is reduced:
 
 ---
 
-# 8. Business Recommendations
+# 10. Business Recommendations
 
-## 8.1 Retention Strategy (Primary Lever)
+## 10.1 Retention Strategy (Primary Lever)
 * Target high-risk users (Score 6+) proactively
 * Deploy high-touch onboarding for new Fiber optic customers
 
 ---
 
-## 8.2 Contract Optimization
+## 10.2 Contract Optimization
 * Incentivize migration to annual plans via discounting or loyalty rewards
 * Position 1-year contracts as the default selection for new users
 
 ---
 
-## 8.3 Payment Optimization
+## 10.3 Payment Optimization
 * Promote auto-payment adoption during the signup flow
 * Offer one-time credits for enrolling in automatic billing
 
 ---
 
-## 8.4 Customer Experience
+## 10.4 Customer Experience
 * Investigate service reliability issues specifically for Fiber optic users
 * Implement a 90-day "danger zone" engagement program
 
 ---
 
-# 9. Business Impact
+# 11. Business Impact
 * Reduced churn in highest-risk cohorts
 * Maximized Customer Lifetime Value (LTV)
 * Improved scalability of acquisition spend
@@ -210,57 +235,18 @@ If churn in the high-risk segment is reduced:
 
 ---
 
-# 10. Key Takeaways
-
-> Churn is the primary bottleneck preventing a healthy business (3.51 ratio) from becoming an industry leader (4.0+ ratio).
-
-> Modern SaaS success is built on the retention of high-value segments, not just bulk user acquisition.
-
----
-
-# 11. Tools & Skills Demonstrated
-* SQL (data extraction, aggregation, multi-factor segmentation)
-* Analytical thinking (unit economics, rule-based risk modeling)
-* Business Strategy (LTV/CAC analysis, retention lever identification)
-* Data Cleaning & Validation
-* C-Suite Decision Reporting
-
----
-
-# 12. Project Outcome
-This project demonstrates the ability to:
-* Translate complex behavioral data into actionable executive insights
-* Identify high-impact revenue leaks
-* Build predictive logic to identify customers at risk
-* Connect retention analytics directly to unit economic outcomes
-
----
-
-# 13. Repository Structure
-```plaintext
-data/
-  ├── raw/
-  └── processed/
-
-sql/          (Analysis Queries 01-10)
-analysis/     (Business Reports 01-10)
-index.html   (Interactive Dashboard)
-```
-
----
-
-# 14. Interactive Dashboard
+# 12. Interactive Dashboard
 
 The project includes a fully interactive **SaaS Growth Intelligence Dashboard** (`index.html`) that visualizes all key metrics in a business-analyst-friendly interface.
 
 ### Dashboard Features
 
-**Hero Screen (First View)**
+**Hero Screen**
 - KPI cards: Market Reach (7,043 users), Churn Velocity (26.57%), Avg LTV (₹495), CAC (₹650), Efficiency Ratio
 - Churn drivers charts: Contract type, Internet service, Payment method
 - High-risk segment table with click-to-reveal insights
 
-**Scroll Section (Deep Dive)**
+**Scroll Section**
 - Risk distribution chart (Low/Medium/High segments)
 - Live unit economics display with LTV:CAC comparison
 - Impact simulation slider — adjust churn reduction and see projected LTV in real-time
@@ -274,17 +260,5 @@ The project includes a fully interactive **SaaS Growth Intelligence Dashboard** 
 
 ---
 
-# 15. Tools & Skills Demonstrated
-* SQL (data extraction, aggregation, multi-factor segmentation)
-* Analytical thinking (unit economics, rule-based risk modeling)
-* Business Strategy (LTV/CAC analysis, retention lever identification)
-* Data Cleaning & Validation
-* C-Suite Decision Reporting
-* Data Visualization (Chart.js, interactive dashboards)
-* HTML/CSS/JavaScript (standalone web dashboard)
-* USed Claude Code for responsive design of the dashboard
-
----
-
-# 16. Final Statement
+# 13. Final Statement
 > This system provides the foundation for data-driven growth by ensuring the business focuses its resources on the customers that drive the highest long-term value.
